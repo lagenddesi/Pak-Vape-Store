@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase' // Yahan double ../../ lagega
 
 export default function AboutPage() {
   const [content, setContent] = useState("")
