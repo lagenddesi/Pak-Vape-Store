@@ -1,7 +1,9 @@
 "use client"
+export const dynamic = 'force-dynamic' // Yeh line sab se upar add karein
+
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
-import { ArrowLeft, CheckCircle2, MessageSquare, Loader2 } from 'lucide-react'
+// ... baqi poora code jo pehle diya tha
 
 export default function ProductDetail({ params }: { params: { id: string } }) {
   const [product, setProduct] = useState<any>(null)
