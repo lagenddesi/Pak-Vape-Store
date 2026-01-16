@@ -1,4 +1,8 @@
 "use client"
+// Yeh line Vercel ko batayegi ke ye page har baar naya hai (Dynamic hai)
+export const dynamic = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 import { ArrowLeft, CheckCircle2, MessageSquare, Loader2 } from 'lucide-react'
@@ -19,20 +23,32 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchData() {
-      if (!params.id) return;
+      // Params.id ko check karein
+      if (!params || !params.id) return;
+      
       try {
-        const { data: p } = await supabase.from('products').select('*').eq('id', params.id).single()
-        const { data: s } = await supabase.from('settings').select('whatsapp_number').eq('id', 1).single()
+        const { data: p, error: pError } = await supabase
+          .from('products')
+          .select('*')
+          .eq('id', params.id)
+          .single()
+          
+        const { data: s } = await supabase
+          .from('settings')
+          .select('whatsapp_number')
+          .eq('id', 1)
+          .single()
+        
         if (p) setProduct(p)
         if (s) setWhatsapp(s.whatsapp_number)
       } catch (err) {
-        console.error(err)
+        console.error("Fetch Error:", err)
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [params.id])
+  }, [params])
 
   async function handleOrder(e: any) {
     e.preventDefault()
@@ -41,20 +57,30 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
     
     try {
       const { data: order, error } = await supabase.from('orders').insert([{
-        customer_name: name, phone, full_address: address, tehsil, district, city,
-        total_amount: product.price, status: 'Pending'
+        customer_name: name, 
+        phone, 
+        full_address: address, 
+        tehsil, 
+        district, 
+        city,
+        total_amount: product.price, 
+        status: 'Pending'
       }]).select().single()
 
       if (!error && order) {
         await supabase.from('order_items').insert([{ 
-          order_id: order.id, product_id: product.id, quantity: 1, price_at_time: product.price 
+          order_id: order.id, 
+          product_id: product.id, 
+          quantity: 1, 
+          price_at_time: product.price 
         }])
+        
         setOrderSuccess(true)
         const msg = `*NEW ORDER - PAK VAPE STORE*%0AProduct: ${product.name}%0APrice: ${product.price}%0ACustomer: ${name}%0ALocation: ${tehsil}, ${district}, ${city}`
         window.location.href = `https://wa.me/${whatsapp}?text=${msg}`
       }
     } catch (err) {
-      alert("Something went wrong!")
+      alert("Error placing order")
     } finally {
       setIsOrdering(false)
     }
@@ -66,7 +92,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
   return (
     <div className="min-h-screen bg-[#0B0E14] text-white p-6">
       <button onClick={() => window.location.href='/'} className="mb-6 flex items-center gap-2 text-slate-400">
-        <ArrowLeft size={16}/> Back
+        <ArrowLeft size={16}/> Back to Shop
       </button>
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-10">
         <img src={product.images[0]} className="w-full rounded-2xl aspect-square object-cover border border-white/10" />
@@ -74,7 +100,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
           <h1 className="text-3xl font-bold mb-2 uppercase">{product.name}</h1>
           <p className="text-2xl text-purple-500 font-black mb-6">Rs. {product.price}</p>
           <form onSubmit={handleOrder} className="space-y-4">
-            <input placeholder="Full Name" className="w-full bg-slate-800 p-3 rounded-lg outline-none" onChange={e=>setName(e.target.value)} required />
+            <input placeholder="Name" className="w-full bg-slate-800 p-3 rounded-lg outline-none" onChange={e=>setName(e.target.value)} required />
             <input placeholder="Phone" className="w-full bg-slate-800 p-3 rounded-lg outline-none" onChange={e=>setPhone(e.target.value)} required />
             <textarea placeholder="Address" className="w-full bg-slate-800 p-3 rounded-lg outline-none" onChange={e=>setAddress(e.target.value)} required />
             <div className="grid grid-cols-2 gap-4">
@@ -90,4 +116,4 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
       </div>
     </div>
   )
-      }
+          }
