@@ -7,6 +7,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <a href="/admin" className="hover:text-purple-400">Inventory</a>
           <a href="/admin/orders" className="hover:text-purple-400">Orders</a>
           <a href="/admin/settings" className="hover:text-purple-400">Settings</a>
+          <a href="/admin/about" className="hover:text-purple-400">Manage About</a>
         </div>
       </nav>
       <main className="p-4 md:p-8 max-w-7xl mx-auto">{children}</main>
