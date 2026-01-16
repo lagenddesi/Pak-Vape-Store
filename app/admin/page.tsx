@@ -7,7 +7,7 @@ export default function AdminDashboard() {
   const [name, setName] = useState("")
   const [price, setPrice] = useState("")
   const [stock, setStock] = useState("")
-  const [category, setCategory] = useState("Pods") // Category State
+  const [category, setCategory] = useState("Pods") // Default Category
   const [images, setImages] = useState("") 
   const [editId, setEditId] = useState<string | null>(null)
 
@@ -24,7 +24,7 @@ export default function AdminDashboard() {
       name,
       price: parseFloat(price),
       stock_quantity: parseInt(stock),
-      category, // Saving Category
+      category, 
       images: images.split(',').map(img => img.trim()),
     }
 
@@ -42,44 +42,35 @@ export default function AdminDashboard() {
 
   const handleEdit = (p: any) => {
     setEditId(p.id); setName(p.name); setPrice(p.price.toString());
-    setStock(p.stock_quantity.toString()); setCategory(p.category || "Pods");
+    setStock(p.stock_quantity.toString()); setCategory(p.category);
     setImages(p.images.join(', '))
   }
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6 text-purple-400 uppercase italic">Inventory Management</h2>
-      
-      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-2xl mb-8 border border-slate-700 grid gap-4">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{editId ? "Edit Product" : "Add New Product"}</p>
+      <form onSubmit={handleSubmit} className="bg-slate-800 p-6 rounded-2xl mb-8 border border-slate-700 grid gap-4 shadow-2xl">
         <input placeholder="Product Name" value={name} onChange={(e)=>setName(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" required />
-        
         <div className="grid grid-cols-2 gap-4">
-          <input placeholder="Price (Rs)" type="number" value={price} onChange={(e)=>setPrice(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" required />
-          <input placeholder="Stock Quantity" type="number" value={stock} onChange={(e)=>setStock(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" required />
+          <input placeholder="Price" type="number" value={price} onChange={(e)=>setPrice(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" required />
+          <input placeholder="Stock" type="number" value={stock} onChange={(e)=>setStock(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" required />
         </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-[10px] text-slate-400 font-bold uppercase ml-1">Select Category</label>
-          <select value={category} onChange={(e)=>setCategory(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none text-white">
-            <option value="Pods">Pods</option>
-            <option value="E-liquids">E-liquids / Drops</option>
-            <option value="Devices">Vape Devices</option>
-            <option value="Accessories">Accessories</option>
-          </select>
-        </div>
-
-        <textarea placeholder="Image URLs (Comma separated)" value={images} onChange={(e)=>setImages(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none h-20" />
-        
+        <select value={category} onChange={(e)=>setCategory(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none text-white">
+          <option value="Pods">Pods</option>
+          <option value="E-liquids">E-liquids</option>
+          <option value="Devices">Devices</option>
+          <option value="Accessories">Accessories</option>
+        </select>
+        <textarea placeholder="Image URLs (comma separated)" value={images} onChange={(e)=>setImages(e.target.value)} className="bg-slate-700 p-3 rounded-xl outline-none" />
         <button className="bg-purple-600 p-4 rounded-xl font-black uppercase tracking-widest hover:bg-purple-700 transition">
-          {editId ? "Update Product Details" : "Save to Inventory"}
+          {editId ? "Update Product" : "Save Product"}
         </button>
-        {editId && <button type="button" onClick={() => {setEditId(null); setName("")}} className="text-slate-500 text-xs underline">Cancel Editing</button>}
+        {editId && <button type="button" onClick={() => {setEditId(null); setName("")}} className="text-slate-500 text-xs underline">Cancel Edit</button>}
       </form>
 
       <div className="grid gap-3">
         {products.map(p => (
-          <div key={p.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center border border-slate-700 shadow-lg">
+          <div key={p.id} className="bg-slate-800 p-4 rounded-xl flex justify-between items-center border border-slate-700">
             <div>
               <p className="font-bold text-slate-200">{p.name}</p>
               <div className="flex gap-2 items-center mt-1">
@@ -96,4 +87,4 @@ export default function AdminDashboard() {
       </div>
     </div>
   )
-      }
+                                                        }
